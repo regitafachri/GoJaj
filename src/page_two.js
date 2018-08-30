@@ -5,33 +5,59 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image
+  Image,
+  Alert
 } from "react-native";
+import PageOne from "./page_one";
+import axios from "axios";
 
 class PageTwo extends Component {
-    constructor(props) {
-        super(props);
-    
-        this.state = {
-          emailUser: "",
-          passwordUser: "",
-          confirmPassword: ""
-        };
-      }
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      emailUser: "",
+      passwordUser: "",
+      confirmPassword: ""
+    };
+  }
 
   static navigationOptions = {
     headerTitle: "Page Dua"
   };
 
-  checkUserInput() {
-    const { emailUser, passwordUser, confirmPassword } = this.state; // Destructuring
+  // checkUserInput() {
+  //   const { emailUser, passwordUser, confirmPassword } = this.state; // Destructuring
 
-    if (emailUser !== "" && passwordUser !== "" && confirmPassword === passwordUser) {
-      this.props.navigation.goBack();
+  //   if (emailUser !== "" && passwordUser !== "" && confirmPassword === passwordUser) {
+  //     this.props.navigation.goBack();
+  //   }
+  // }
+
+  userRegister = () => {
+    const { emailUser, passwordUser, confirmPassword } = this.state;
+    const url = "http://172.104.50.9:3000/api/Users";
+    if (emailUser === "" || passwordUser === "" || confirmPassword === "") {
+      Alert.alert("Warning!", "Password didn't match");
+    } else {
+      if (passwordUser === confirmPassword) {
+        const data = {
+          email: emailUser,
+          password: passwordUser
+        };
+        axios
+          .post(url, data)
+          .then(res => {
+            if (res.status === 200) {
+              this.props.navigation.goBack();
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
     }
-  }
-
-
+  };
 
   render() {
     return (
@@ -58,7 +84,7 @@ class PageTwo extends Component {
         />
         <TouchableOpacity style={style.button}>
           <Text
-            onPress={() => this.checkUserInput()}
+            onPress={() => this.userRegister()}
             //onPress={() => this.props.navigation.goBack()}
             style={style.txtInsideBtnLogin}
           >
